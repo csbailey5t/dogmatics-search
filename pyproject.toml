@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "dogmatics-search"
+version = "0.1.0"
+description = ""
+authors = ["Scott Bailey <csb5t@virginia.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langchain = "^0.1.5"
+ipykernel = "^6.29.1"
+langchain-community = "^0.0.19"
+pandas = "^2.2.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.2.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
