@@ -20,6 +20,7 @@ llama-index-embeddings-cohere = "^0.1.7"
 llama-index-vector-stores-pinecone = "^0.1.4"
 llama-index-readers-file = "^0.1.19"
 llama-index-postprocessor-cohere-rerank = "^0.1.4"
+pyarrow = "^16.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
