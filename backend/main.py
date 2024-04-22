@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.llms.cohere import Cohere
 from llama_index.core import Settings, VectorStoreIndex
@@ -44,7 +45,19 @@ query_engine = RetrieverQueryEngine(
     ],
 )
 
+# Set up CORS for local development
+origins = [
+    "http://localhost:4321",
+]
+
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class Query(BaseModel):
