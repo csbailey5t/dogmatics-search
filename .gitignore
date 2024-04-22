@@ -1,3 +1,7 @@
 data-prep/Dogmatics/
 data-prep/data/
 data-prep/.env
+
+
+**/.env
+backend/__pycache__
