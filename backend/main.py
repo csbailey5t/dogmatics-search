@@ -1,42 +1,27 @@
-import os
+import uvicorn
 
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from llama_index.embeddings.openai import OpenAIEmbedding
-from llama_index.llms.cohere import Cohere
-from llama_index.core import Settings, VectorStoreIndex
+from fastapi.responses import RedirectResponse
+
 from llama_index.core.postprocessor import MetadataReplacementPostProcessor
-from llama_index.vector_stores.pinecone import PineconeVectorStore
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import VectorIndexRetriever
 
-
-from pinecone import Pinecone
 from pydantic import BaseModel
 
-load_dotenv()
+from app.settings import init_settings
+from app.database import get_vector_index
 
-embed_model = OpenAIEmbedding(
-    api_key=os.getenv("OPENAI_API_KEY"), model="text-embedding-3-small", dimensions=1024
-)
 
-llm = Cohere(api_key=os.getenv("COHERE_API_KEY"), model="command-r")
+# Set up llm and embedding model
+init_settings()
 
-# Set llm and embedding model for llama-index
-Settings.llm = llm
-Settings.embed_model = embed_model
-
-# Connect to Pinecone index
-pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-pc_index = pc.Index("dogmatics")
-
-# Create vector store from existing index
-vector_store = PineconeVectorStore(pinecone_index=pc_index)
-index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+# Instantiate vector index
+index = get_vector_index()
 
 # Create retriever and query engine
-# We're using the MetadataReplacementPostProcessor since we used the SentenceWindowNodeProcessor
+# We're using the MetadataReplacementPostProcessor since we used the SentenceWindowNodeProcessor for chunking
 retriever = VectorIndexRetriever(index=index, similarity_top_k=5)
 query_engine = RetrieverQueryEngine(
     retriever=retriever,
@@ -50,7 +35,11 @@ origins = [
     "http://localhost:4321",
 ]
 
-app = FastAPI()
+# Instantiate app w/ CORS
+app = FastAPI(
+    title="Ask the Dogmatics",
+    description="Ask the Dogmatics is an API for using retrieval augmented generation of the English translation of Karl Barth's Church Dogmatics",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -60,20 +49,23 @@ app.add_middleware(
 )
 
 
+# Define a query model - for now it's just a single string
 class Query(BaseModel):
     text: str
 
 
+# Redirect root url to API docs
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def root():
+    return RedirectResponse(url="/docs")
 
 
+# Define a query route that takes a query and returns
+# a generated response from an LLM
 @app.post("/query")
 def query_index(query: Query):
     return query_engine.query(query.text)
 
 
-# TODO
-# Abstract llm, model, pinecone setup
-# Add more documentation
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
