@@ -1,4 +1,4 @@
-# Searching Barth's Church Dogmatics
+# Approaching Barth's Church Dogmatics
 
 ## Overview
 
@@ -10,9 +10,9 @@ Given the expansive character of Barth's *Dogmatics* and its particular rhetoric
 
 This current effort is effectively an attempt to build a research assistant for working Barth's Dogmatics, and this particular repository covers a few things (so far)
 
-`data-prep` contains code for parsing the TEI version of the English translation of the *Dogmatics*, generating embeddings of the chunked text with OpenAI, and storing the embeddings in a Pinecone vector database. I use `llama-index` as a convenient framework to handle chunking, embedding, and upload to Pinecone. I've also used Jupyter notebooks given the iterative character of data cleaning and preparation. 
+`data-prep` contains code for parsing the TEI version of the English translation of the *Dogmatics*, generating embeddings of the chunked text with OpenAI, and storing the embeddings in a Pinecone vector database. I use `llama-index` as a convenient framework to handle chunking, batched embedding, and upload to Pinecone. I've also used Jupyter notebooks given the iterative character of data cleaning and preparation. 
 
-`backend` contains a simple FastAPI app for retrieval augemented generation over the Dogmatics embeddings. For now, there's a single route at `/query` that takes a question (prompt) and returns a response. I'm using `llama-index` again to take advantage of the query engine and `MetadataReplacementPostProceesor`, which pairs with the `SentenceWindowNodeParser` I used to provide additional sentence context for embeddings during generation. Given the character of Barth's writing, the additional window *may* provide higher quality generation, but I'll test against other approaches in future iterations. 
+`backend` contains a simple FastAPI app for retrieval augemented generation over the Dogmatics embeddings. For now, there's a single route at `/query` that takes a question (prompt) and returns a response. I'm using `llama-index` again to take advantage of the query engine and `MetadataReplacementPostProceesor`, which pairs with the `SentenceWindowNodeParser` I used to provide additional sentence context for embeddings during generation. Given the character of Barth's writing, the additional window *may* provide higher quality generation, but I'll test against other approaches in future iterations. With the current chunking approach, there are roughly **65k** vectors, but this could easily go higher depending on chunking approach. 
 
 `frontend` contains a simple Astro application with a bit of React and Tailwind for styles. For now, there's a single form to submit a query to the backend and display a response. I chose Astro for ease of use (I have prior experience), and it will enable me to quick build other pages and interfaces as I develop this project and document results. 
 
