@@ -1,4 +1,5 @@
 import { type FormEvent, useState } from "react";
+import Response from "./Response";
 
 export default function QuestionForm() {
   const [responseMessage, setResponseMessage] = useState("");
@@ -21,13 +22,24 @@ export default function QuestionForm() {
     }
   }
   return (
-    <form onSubmit={submit}>
-      <label>
-        Question
-        <input type="text" name="text" />
-      </label>
-      <button type="submit">Submit</button>
-      {responseMessage && <p>{responseMessage}</p>}
-    </form>
+    <div>
+      <form onSubmit={submit} className="prose">
+        <label className="form-label prose-xl">
+          Question
+          <textarea
+            name="text"
+            cols={65}
+            className="block form-textarea rounded-md"
+          />
+        </label>
+        <button
+          type="submit"
+          className="block border border-black my-2 p-2 rounded-md hover:bg-slate-100"
+        >
+          Submit
+        </button>
+      </form>
+      {responseMessage && <Response text={responseMessage} />}
+    </div>
   );
 }

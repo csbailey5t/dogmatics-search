@@ -6,35 +6,11 @@ import QuestionForm from "../components/QuestionForm";
 
 <Layout title="Welcome to Astro.">
   <main>
-    <h1>Welcome to Ask the Dogmatics</h1>
-    <p class="instructions">
+    <h1 class="text-3xl leading-6 text-center">Welcome to Ask the Dogmatics</h1>
+    <p class="prose mt-4 mx-auto">
       To get started, just enter a question below, and find out what the Church
       Dogmatics says about your question.
     </p>
-    <QuestionForm client:load />
+    <div class="mx-auto max-w-prose mt-4"><QuestionForm client:load /></div>
   </main>
-
-  <style>
-    main {
-      font-size: 20px;
-      line-height: 1.6;
-    }
-    h1 {
-      font-size: 4rem;
-      font-weight: 700;
-      line-height: 1;
-      text-align: center;
-      margin-bottom: 1em;
-    }
-    .instructions {
-      margin-bottom: 2rem;
-      border: 1px solid rgba(var(--accent-light), 25%);
-      background: linear-gradient(
-        rgba(var(--accent-dark), 66%),
-        rgba(var(--accent-dark), 33%)
-      );
-      padding: 1.5rem;
-      border-radius: 8px;
-    }
-  </style>
 </Layout>
