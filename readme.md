@@ -6,7 +6,7 @@ Karl Barth's *Church Dogmatics* is a massive theological work, and while it's ve
 
 Given the expansive character of Barth's *Dogmatics* and its particular rhetorical approaches, I've been experimenting with computational methods for understanding, analyzing, and reading the *Dogmatics* for many years. It's both a source of academic interest and a useful example corpus for learning new methods and libraries.
 
-N.B. — The TEI of the Church Dogmatics is under copyright, and provided to me years ago for research purposes by the Center for Barth Studies at Princeton. Given copyright restrictions, the XML files are not shared here, outputs from notebooks are cleared, and I've built the backend and frontend applications to be run locally, though they could be deployed under permissions at a later point. 
+> *N.B. — The TEI of the Church Dogmatics is under copyright, and provided to me years ago for research purposes by the Center for Barth Studies at Princeton. Given copyright restrictions, the XML files are not shared here, outputs from notebooks are cleared, and I've built the backend and frontend applications to be run locally, though they could be deployed under permissions at a later point.* 
 
 This current effort is effectively an attempt to build a research assistant for working Barth's Dogmatics, and this particular repository covers a few things (so far)
 
