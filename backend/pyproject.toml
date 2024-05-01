@@ -19,6 +19,7 @@ llama-index-llms-cohere = "^0.1.6"
 llama-index-llms-openai = "^0.1.16"
 llama-index-vector-stores-pinecone = "^0.1.4"
 requests = "^2.31.0"
+comet-llm = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.4.1"
