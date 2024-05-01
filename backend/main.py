@@ -1,9 +1,12 @@
+import comet_llm
+import os
 import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
+from llama_index.core import PromptTemplate
 from llama_index.core.postprocessor import MetadataReplacementPostProcessor
 from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.retrievers import VectorIndexRetriever
@@ -29,6 +32,21 @@ query_engine = RetrieverQueryEngine(
         MetadataReplacementPostProcessor(target_metadata_key="window")
     ],
 )
+
+# Define a custom prompt to encourage citation
+qa_citation_prompt_template_str = (
+    "You are a Protestant theologian, and a careful reader of theology. Context information is below. \n"
+    "---------------------\n"
+    "{context_str}"
+    "\n---------------------\n"
+    "Given just this information and no prior knowledge, please answer the question: {query_str}\n"
+    "Provide reference citations from the context in your answer. If the provided context uses more than one volume from the Dogmatics, use at least two volumes in your answer."
+)
+qa_prompt_template = PromptTemplate(qa_citation_prompt_template_str)
+query_engine.update_prompts(
+    {"response_synthesizer:text_qa_template": qa_prompt_template}
+)
+
 
 # Set up CORS for local development
 origins = [
@@ -64,7 +82,25 @@ def root():
 # a generated response from an LLM
 @app.post("/query")
 def query_index(query: Query):
-    return query_engine.query(query.text)
+    response = query_engine.query(query.text)
+
+    # Given the response.metadata, get the set of volumes in the response
+    volumes_set = {metadata["volume"] for metadata in response.metadata.values()}
+    volumes = " ".join(volumes_set)
+
+    comet_llm.log_prompt(
+        api_key=os.getenv("COMET_API_KEY"),
+        project="barth",
+        prompt=qa_citation_prompt_template_str.format(
+            query_str=query.text, context_str="RETRIEVED DOCUMENTS"
+        ),
+        prompt_template=qa_citation_prompt_template_str,
+        output=response.response,
+        prompt_template_variables={"query": query.text},
+        metadata={"volumes": volumes},
+    )
+
+    return response
 
 
 if __name__ == "__main__":
