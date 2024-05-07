@@ -15,6 +15,7 @@ from pydantic import BaseModel
 
 from app.settings import init_settings
 from app.database import get_vector_index
+from app.response import APIResponse
 
 
 # Set up llm and embedding model
@@ -82,11 +83,15 @@ def root():
 # a generated response from an LLM
 @app.post("/query")
 def query_index(query: Query):
-    response = query_engine.query(query.text)
+    api_response = query_engine.query(query.text)
 
-    # Given the response.metadata, get the set of volumes in the response
-    volumes_set = {metadata["volume"] for metadata in response.metadata.values()}
-    volumes = " ".join(volumes_set)
+    # # Given the response.metadata, get the set of volumes in the response
+    # volumes_set = {metadata["volume"] for metadata in response.metadata.values()}
+    # volumes = " ".join(volumes_set)
+
+    response = APIResponse(
+        response_text=api_response.response, metadata=api_response.metadata
+    )
 
     comet_llm.log_prompt(
         api_key=os.getenv("COMET_API_KEY"),
@@ -95,12 +100,14 @@ def query_index(query: Query):
             query_str=query.text, context_str="RETRIEVED DOCUMENTS"
         ),
         prompt_template=qa_citation_prompt_template_str,
-        output=response.response,
+        output=response.response_text,
         prompt_template_variables={"query": query.text},
-        metadata={"volumes": volumes},
+        metadata={"volumes": response.sources},
     )
 
-    return response
+    return response.model_dump_json(
+        include={"response_text", "metadata", "sources"}, exclude_none=True
+    )
 
 
 if __name__ == "__main__":

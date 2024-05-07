@@ -3,6 +3,7 @@ import Response from "./Response";
 
 export default function QuestionForm() {
   const [responseMessage, setResponseMessage] = useState("");
+  const [responseSource, setResponseSource] = useState("");
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,9 +17,13 @@ export default function QuestionForm() {
       body: JSON.stringify(formDataObject),
     });
     const data = await response.json();
-    console.log(data);
-    if (data.response) {
-      setResponseMessage(data.response);
+    const jsonData = JSON.parse(data);
+    console.log(jsonData);
+    if (jsonData.response_text) {
+      setResponseMessage(jsonData.response_text);
+    }
+    if (jsonData.sources) {
+      setResponseSource(jsonData.sources);
     }
   }
   return (
@@ -39,7 +44,9 @@ export default function QuestionForm() {
           Submit
         </button>
       </form>
-      {responseMessage && <Response text={responseMessage} />}
+      {responseMessage && (
+        <Response text={responseMessage} responseSource={responseSource} />
+      )}
     </div>
   );
 }
